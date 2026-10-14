@@ -1,0 +1,2 @@
+self.addEventListener('install',e=>e.waitUntil(caches.open('bt1').then(c=>c.addAll(['index.html','coding_platform.html','manifest.json','modules/calculator.html','modules/library.html','modules/snake.html','modules/dsa.html','modules/matrix.html','modules/calculator_advanced.html','modules/library_advanced.html','modules/dsa_advanced.html','modules/matrix_advanced.html','modules/snake_advanced.html']))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));

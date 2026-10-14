@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Operations</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:#0f172a;color:#e2e8f0;padding:15px;text-align:center;}
+h2{color:#38bdf8;} textarea{background:#1e293b;color:#fff;border:1px solid #334155;border-radius:6px;padding:8px;}
+button{padding:8px 16px;border:none;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;margin:4px;} button:hover{background:#38bdf8;color:#0f172a;}
+pre{background:#1e293b;padding:14px;border-radius:8px;display:inline-block;text-align:left;white-space:pre-wrap;min-width:200px;}
+</style>
+</head>
+<body>
+<h2>Matrix Operations</h2>
+<p>Format: rows ; se alag, values space se. Example: 1 2;3 4</p>
+<textarea id="m1" rows="4" cols="20">1 2;3 4</textarea>
+<textarea id="m2" rows="4" cols="20">5 6;7 8</textarea><br>
+<button onclick="op('add')">Add</button><button onclick="op('mul')">Multiply</button>
+<button onclick="op('transpose')">Transpose (A)</button><button onclick="op('det')">Determinant (A)</button>
+<button onclick="op('scalar')">Scalar×A</button><button onclick="op('maxmin')">Max/Min (A)</button>
+<button onclick="op('rev')">Reverse (A)</button><button onclick="op('identity')">Identity</button>
+<h3>Result:</h3><pre id="out"></pre>
+<script>
+function parse(t){return t.split(';').map(r=>r.trim().split(/\s+/).map(Number));}
+function fmt(m){return m.map(r=>r.join('\t')).join('\n');}
+function det(m){if(m.length!==m[0].length)return NaN;if(m.length===1)return m[0][0];if(m.length===2)return m[0][0]*m[1][1]-m[0][1]*m[1][0];let d=0;for(let j=0;j<m.length;j++){const sub=m.slice(1).map(r=>r.filter((_,k)=>k!==j));d+=((j%2?-1:1)*m[0][j]*det(sub));}return d;}
+function op(k){
+const A=parse(document.getElementById('m1').value),B=parse(document.getElementById('m2').value),out=document.getElementById('out');
+try{
+if(k==='add')out.textContent=fmt(A.map((r,i)=>r.map((v,j)=>v+B[i][j])));
+else if(k==='mul')out.textContent=fmt(A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,v,l)=>s+v*B[l][j],0))));
+else if(k==='transpose')out.textContent=fmt(A[0].map((_,j)=>A.map(r=>r[j])));
+else if(k==='det')out.textContent='Determinant: '+det(A);
+else if(k==='scalar'){const s=parseFloat(prompt('Scalar value:','2'));out.textContent=fmt(A.map(r=>r.map(v=>v*s)));}
+else if(k==='maxmin'){const f=A.flat();out.textContent='Max: '+Math.max(...f)+'\nMin: '+Math.min(...f);}
+else if(k==='rev'){const flat=A.flat().reverse(),cols=A[0].length;out.textContent=fmt(flat.reduce((acc,v,i)=>{const r=Math.floor(i/cols);(acc[r]=acc[r]||[]).push(v);return acc;},[]));}
+else if(k==='identity'){const n=A.length;out.textContent=fmt(Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0)));}
+}catch(e){out.textContent='Invalid input';}
+}
+</script>
+</body>
+</html>

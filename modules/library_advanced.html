@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library Management</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:#0f172a;color:#e2e8f0;padding:15px;}
+h2{color:#38bdf8;text-align:center;margin-bottom:12px;}
+.stats{display:flex;gap:10px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;}
+.stats div{background:#1e293b;padding:10px 16px;border-radius:8px;border:1px solid #334155;}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin-bottom:10px;}
+input,select{padding:8px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:#fff;}
+button{padding:8px 14px;border:none;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;margin:2px;}
+button:hover{background:#38bdf8;color:#0f172a;}
+.del{background:#dc2626;} .edit{background:#f59e0b;color:#0f172a;}
+#toolbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+table{width:100%;border-collapse:collapse;background:#1e293b;}
+th,td{border:1px solid #334155;padding:8px;text-align:left;}
+th{background:#0369a1;cursor:pointer;} tr:nth-child(even){background:#0f172a;}
+</style>
+</head>
+<body>
+<h2>Library Management System</h2>
+<div class="stats">
+<div>Total Books: <b id="stTotal">0</b></div>
+<div>Issued: <b id="stIssued">0</b></div>
+<div>Available: <b id="stAvail">0</b></div>
+</div>
+<div class="form">
+<input id="id" placeholder="Book ID"><input id="title" placeholder="Title"><input id="author" placeholder="Author">
+<input id="pub" placeholder="Publisher"><input id="year" placeholder="Year"><input id="isbn" placeholder="ISBN">
+<input id="copies" placeholder="Copies"><select id="genre"><option>Fiction</option><option>Science</option><option>History</option><option>Tech</option><option>Other</option></select>
+</div>
+<div style="text-align:center;margin-bottom:10px;">
+<button onclick="addBook()">Add</button><button class="del" onclick="delBook()">Delete by ID</button>
+<button class="edit" onclick="editBook()">Edit by ID</button><button onclick="clearAll()">Clear All</button>
+</div>
+<div id="toolbar">
+<input id="search" placeholder="Search title/author/genre" oninput="render()" style="flex:1;min-width:150px;">
+<select id="sort" onchange="render()"><option value="title">Sort by Title</option><option value="author">Sort by Author</option><option value="year">Sort by Year</option><option value="copies">Sort by Copies</option></select>
+<button onclick="exportCSV()">Export CSV</button><button onclick="toggleIssue()">Toggle Issue</button>
+</div>
+<table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Genre</th><th>Year</th><th>Copies</th><th>Status</th></tr></thead><tbody id="tbody"></tbody></table>
+<script>
+let books=JSON.parse(localStorage.getItem('lib2')||'[]');
+function save(){localStorage.setItem('lib2',JSON.stringify(books));}
+function val(i){return document.getElementById(i).value;}
+function render(){
+ const q=val('search').toLowerCase(),s=val('sort');
+ let list=books.filter(b=>b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)||b.genre.toLowerCase().includes(q));
+ list.sort((a,b)=>{let x=a[s],y=b[s];if(s==='year'||s==='copies')return +x-+y;return String(x).localeCompare(String(y));});
+ document.getElementById('tbody').innerHTML=list.map(b=>`<tr><td>${b.id}</td><td>${b.title}</td><td>${b.author}</td><td>${b.genre}</td><td>${b.year}</td><td>${b.copies}</td><td>${b.issued?'<span style="color:#f59e0b">Issued</span>':'<span style="color:#4ade80">Available</span>'}</td></tr>`).join('');
+ document.getElementById('stTotal').textContent=books.length;
+ document.getElementById('stIssued').textContent=books.filter(b=>b.issued).length;
+ document.getElementById('stAvail').textContent=books.filter(b=>!b.issued).length;
+}
+function addBook(){const b={id:val('id'),title:val('title'),author:val('author'),pub:val('pub'),year:val('year'),isbn:val('isbn'),copies:val('copies'),genre:val('genre'),issued:false};if(!b.id||!b.title){alert('ID & Title required');return;}books.push(b);save();render();}
+function delBook(){books=books.filter(b=>b.id!==val('id'));save();render();}
+function editBook(){const b=books.find(x=>x.id===val('id'));if(b){b.title=val('title')||b.title;b.author=val('author')||b.author;b.copies=val('copies')||b.copies;save();render();}}
+function clearAll(){if(confirm('Delete all?')){books=[];save();render();}}
+function toggleIssue(){const b=books.find(x=>x.id===val('id'));if(b){b.issued=!b.issued;save();render();}}
+function exportCSV(){const rows=[['ID','Title','Author','Genre','Year','Copies','Status'].join(','),...books.map(b=>[b.id,b.title,b.author,b.genre,b.year,b.copies,b.issued?'Issued':'Available'].join(','))];const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.join('\n'));a.download='library.csv';a.click();}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Matrix Operations</title>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;padding:20px;text-align:center;}
+  h2{color:#38bdf8;} input,textarea{background:#1e293b;color:#fff;border:1px solid #334155;border-radius:6px;padding:8px;}
+  button{padding:8px 16px;border:none;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;margin:4px;} button:hover{background:#38bdf8;color:#0f172a;}
+  pre{background:#1e293b;padding:12px;border-radius:8px;display:inline-block;text-align:left;}
+</style>
+</head>
+<body>
+<h2>Matrix Operations</h2>
+<p>Format: rows ko ; se alag karo, values space se. Example: <code>1 2;3 4</code></p>
+<textarea id="m1" rows="4" cols="18" placeholder="Matrix A">1 2;3 4</textarea>
+<textarea id="m2" rows="4" cols="18" placeholder="Matrix B">5 6;7 8</textarea><br>
+<button onclick="op('add')">Add (A+B)</button><button onclick="op('mul')">Multiply (A×B)</button><button onclick="op('maxmin')">Max/Min (A)</button><button onclick="op('rev')">Reverse (A)</button>
+<br><h3>Result:</h3><pre id="out"></pre>
+<script>
+function parse(t){return t.split(';').map(r=>r.trim().split(/\s+/).map(Number));}
+function fmt(m){return m.map(r=>r.join('\t')).join('\n');}
+function op(k){
+  const A=parse(document.getElementById('m1').value),B=parse(document.getElementById('m2').value),out=document.getElementById('out');
+  try{
+    if(k==='add'){out.textContent=fmt(A.map((r,i)=>r.map((v,j)=>v+B[i][j])));}
+    else if(k==='mul'){out.textContent=fmt(A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,v,l)=>s+v*B[l][j],0))));}
+    else if(k==='maxmin'){const f=A.flat();out.textContent='Max: '+Math.max(...f)+'\nMin: '+Math.min(...f);}
+    else if(k==='rev'){out.textContent=fmt(A.flat().reverse().reduce((acc,v,i)=>{const row=Math.floor(i/A[0].length);(acc[row]=acc[row]||[]).push(v);return acc;},[]));}
+  }catch(e){out.textContent='Invalid input';}
+}
+</script>
+</body>
+</html>

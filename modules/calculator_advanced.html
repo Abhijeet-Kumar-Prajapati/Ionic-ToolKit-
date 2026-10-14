@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scientific Calculator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e2e8f0;display:flex;justify-content:center;padding:15px;}
+.calc{background:#1e293b;border-radius:18px;padding:18px;width:min(420px,96vw);box-shadow:0 10px 40px rgba(0,0,0,.5);border:1px solid #334155;}
+h2{color:#38bdf8;text-align:center;margin-bottom:10px;}
+#history{height:22px;text-align:right;color:#64748b;font-size:.85rem;overflow:hidden;}
+#display{width:100%;height:60px;font-size:1.8rem;text-align:right;padding:12px;border:none;border-radius:10px;background:#0f172a;color:#38bdf8;margin-bottom:10px;border:1px solid #334155;}
+#modeRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+#modeRow button{padding:6px 12px;background:#334155;border:none;color:white;border-radius:6px;cursor:pointer;}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+button{padding:12px 4px;font-size:.9rem;border:none;border-radius:8px;background:#334155;color:#fff;cursor:pointer;transition:.15s;}
+button:hover{background:#475569;}
+.fn{background:#0e7490;} .op{background:#0369a1;} .eq{background:#16a34a;grid-row:span 2;} .clr{background:#dc2626;} .mem{background:#7c3aed;}
+.inv{background:#f59e0b;color:#0f172a;}
+</style>
+</head>
+<body>
+<div class="calc">
+<h2>Scientific Calculator</h2>
+<div id="history"></div>
+<input id="display" readonly placeholder="0">
+<div id="modeRow">
+<span>Mode: <b id="modeLabel">DEG</b></span>
+<button onclick="toggleMode()">DEG/RAD</button>
+<button onclick="toggleInv()">INV <b id="invLabel" style="color:#f59e0b;">OFF</b></button>
+</div>
+<div class="grid">
+<button class="mem" onclick="memClear()">MC</button><button class="mem" onclick="memRecall()">MR</button><button class="mem" onclick="memAdd()">M+</button><button class="mem" onclick="memSub()">M-</button><button class="mem" onclick="memSave()">MS</button>
+<button class="clr" onclick="clearD()">C</button><button class="fn" onclick="back()">⌫</button><button class="fn" onclick="press('(')">(</button><button class="fn" onclick="press(')')">)</button><button class="op" onclick="press('/')">÷</button>
+<button class="fn" onclick="func('sin')">sin</button><button class="fn" onclick="func('cos')">cos</button><button class="fn" onclick="func('tan')">tan</button><button class="fn" onclick="press('log(')">log</button><button class="op" onclick="press('*')">×</button>
+<button class="fn" onclick="func('asin')">sin⁻¹</button><button class="fn" onclick="func('acos')">cos⁻¹</button><button class="fn" onclick="func('atan')">tan⁻¹</button><button class="fn" onclick="press('ln(')">ln</button><button class="op" onclick="press('-')">−</button>
+<button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button class="fn" onclick="press('Math.sqrt(')">√</button><button class="op" onclick="press('+')">+</button>
+<button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button class="fn" onclick="press('^2')">x²</button><button class="op" onclick="press('%')">%</button>
+<button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button class="fn" onclick="press('^3')">x³</button><button class="fn" onclick="fact()">n!</button>
+<button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="press('Math.PI')">π</button><button class="fn" onclick="press('**')">xʸ</button><button class="op" onclick="press('!')"></button>
+<button class="eq" onclick="calc()">=</button><button class="fn" onclick="press('Math.E')">e</button><button class="fn" onclick="press('^(1/2)')">²√x</button><button class="fn" onclick="press('1/')">1/x</button><button class="fn" onclick="press('exp(')">eˣ</button>
+</div>
+</div>
+<script>
+const d=document.getElementById('display');let mem=0,isDeg=true,inv=false;
+function press(v){d.value=(d.value==='Error')?'':d.value+v;}
+function clearD(){d.value='';document.getElementById('history').textContent='';}
+function back(){d.value=d.value.slice(0,-1);}
+function toggleMode(){isDeg=!isDeg;document.getElementById('modeLabel').textContent=isDeg?'DEG':'RAD';}
+function toggleInv(){inv=!inv;document.getElementById('invLabel').textContent=inv?'ON':'OFF';}
+function func(name){let fn=name;if(inv&&['sin','cos','tan'].includes(name))fn='a'+name;d.value+=fn+'(';}
+function memClear(){mem=0;} function memRecall(){d.value+=mem;} function memAdd(){mem+=parseFloat(d.value)||0;}
+function memSub(){mem-=parseFloat(d.value)||0;} function memSave(){mem=parseFloat(d.value)||0;}
+function fact(){let n=parseInt(d.value);if(isNaN(n)||n<0){d.value='Error';return;}let r=1;for(let i=2;i<=n;i++)r*=i;d.value=r;}
+function calc(){try{let e=d.value;if(isDeg){e=e.replace(/\b(sin|cos|tan|asin|acos|atan)\(/g,'$1(Math.PI/180*');e=e.replace(/a\(/g,'Math.PI/180*a');}e=e.replace(/\^/g,'**').replace(/%/g,'/100').replace(/\bln\(/g,'Math.log(').replace(/\blog\(/g,'Math.log10(').replace(/\bexp\(/g,'Math.exp(');document.getElementById('history').textContent=d.value;d.value=Function('"use strict";const sin=Math.sin,cos=Math.cos,tan=Math.tan,asin=Math.asin,acos=Math.acos,atan=Math.atan,ln=Math.log,exp=Math.exp;return ('+e+')')();}catch(x){d.value='Error';}}
+</script>
+</body>
+</html>

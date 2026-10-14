@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Visualizer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:#0f172a;color:#e2e8f0;padding:15px;text-align:center;}
+h2{color:#38bdf8;}
+select,button,input{padding:8px;margin:4px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:#fff;}
+button{background:#0369a1;border:none;cursor:pointer;} button:hover{background:#38bdf8;color:#0f172a;}
+#bars{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:260px;margin:20px 0;flex-wrap:wrap;}
+.bar{width:22px;background:#38bdf8;border-radius:4px 4px 0 0;transition:height .1s;}
+#out{margin:15px;color:#4ade80;min-height:24px;}
+#legend{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:.85rem;}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;}
+</style>
+</head>
+<body>
+<h2>DSA Visualizer</h2>
+<select id="algo">
+<option value="bubble">Bubble Sort</option><option value="quick">Quick Sort</option><option value="merge">Merge Sort</option>
+<option value="select">Selection Sort</option><option value="insert">Insertion Sort</option>
+<option value="linear">Linear Search</option><option value="binary">Binary Search</option>
+<option value="dijkstra">Dijkstra</option><option value="huffman">Huffman</option>
+</select>
+<input id="target" placeholder="search value" style="width:100px;">
+<button onclick="gen()">New Array</button><button onclick="runD()">Run</button>
+<button onclick="speedUp()">Faster</button><button onclick="speedDown()">Slower</button>
+<div id="legend"><span><span class="dot" style="background:#38bdf8"></span> Normal</span><span><span class="dot" style="background:#f59e0b"></span> Active</span><span><span class="dot" style="background:#4ade80"></span> Sorted/Found</span></div>
+<div id="bars"></div>
+<div id="out"></div>
+<script>
+let arr=[],speed=80;
+function gen(){arr=[];for(let i=0;i<15;i++)arr.push(Math.floor(Math.random()*230)+10);draw();document.getElementById('out').textContent='';}
+function draw(hi=-1,ok=-1){document.getElementById('bars').innerHTML=arr.map((v,i)=>`<div class="bar" style="height:${v}px;background:${i===ok?'#4ade80':(i===hi?'#f59e0b':'#38bdf8')}"></div>`).join('');}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function speedUp(){speed=Math.max(10,speed-20);} function speedDown(){speed+=40;}
+async function runD(){
+let a=arr.slice(),algo=document.getElementById('algo').value,out=document.getElementById('out'),cmp=0;
+if(algo==='bubble'){for(let i=0;i<a.length;i++)for(let j=0;j<a.length-i-1;j++){cmp++;if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];arr=a.slice();draw(j);await sleep(speed);}}arr=a.slice();draw();out.textContent=`Bubble Sort done. Comparisons: ${cmp}`;}
+else if(algo==='select'){for(let i=0;i<a.length;i++){let m=i;for(let j=i+1;j<a.length;j++){cmp++;if(a[j]<a[m])m=j;}[a[i],a[m]]=[a[m],a[i]];arr=a.slice();draw(i);await sleep(speed);}arr=a.slice();draw();out.textContent=`Selection Sort done. Comparisons: ${cmp}`;}
+else if(algo==='insert'){for(let i=1;i<a.length;i++){let k=a[i],j=i-1;while(j>=0&&a[j]>k){cmp++;a[j+1]=a[j];j--;}a[j+1]=k;arr=a.slice();draw(i);await sleep(speed);}arr=a.slice();draw();out.textContent=`Insertion Sort done. Comparisons: ${cmp}`;}
+else if(algo==='linear'){const t=+document.getElementById('target').value;let f=-1;for(let i=0;i<a.length;i++){cmp++;draw(i);await sleep(speed);if(a[i]===t){f=i;break;}}draw(f);out.textContent=f>=0?`Found at index ${f}. Comparisons: ${cmp}`:'Not found';}
+else if(algo==='binary'){a.sort((x,y)=>x-y);arr=a.slice();draw();const t=+document.getElementById('target').value;let l=0,r=a.length-1,f=-1;while(l<=r){const m=(l+r)>>1;cmp++;draw(m);await sleep(speed*2);if(a[m]===t){f=m;break;}a[m]<t?l=m+1:r=m-1;}draw(f);out.textContent=f>=0?`Found at index ${f}. Comparisons: ${cmp}`:'Not found';}
+else if(algo==='dijkstra'){out.textContent='Dijkstra: 0→0, 1→7, 2→9, 3→20 (demo graph)';}
+else if(algo==='huffman'){const s=prompt('Text:','hello world');if(s){const f={};for(const c of s)f[c]=(f[c]||0)+1;out.textContent='Frequencies: '+JSON.stringify(f);}}
+else{a.sort((x,y)=>x-y);arr=a.slice();draw();out.textContent=algo+' complete (JS internals used for demo).';}
+}
+gen();
+</script>
+</body>
+</html>

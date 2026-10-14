@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scientific Calculator</title>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;justify-content:center;padding:20px;}
+  .calc{background:#1e293b;padding:20px;border-radius:12px;width:340px;}
+  #display{width:100%;height:55px;font-size:1.6rem;text-align:right;padding:10px;border:none;border-radius:8px;background:#0f172a;color:#38bdf8;margin-bottom:12px;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  button{padding:12px;font-size:1rem;border:none;border-radius:8px;background:#334155;color:#fff;cursor:pointer;}
+  button:hover{background:#38bdf8;color:#0f172a;}
+  .op{background:#0369a1;} .eq{background:#16a34a;grid-column:span 2;} .clr{background:#dc2626;}
+</style>
+</head>
+<body>
+<div class="calc">
+  <h2 style="color:#38bdf8;text-align:center;margin-bottom:12px;">Scientific Calculator</h2>
+  <input id="display" readonly placeholder="0">
+  <div class="grid">
+    <button class="clr" onclick="clearD()">C</button>
+    <button onclick="press('(')">(</button><button onclick="press(')')">)</button><button class="op" onclick="press('/')">÷</button>
+    <button onclick="press('sin(')">sin</button><button onclick="press('cos(')">cos</button><button onclick="press('tan(')">tan</button><button class="op" onclick="press('*')">×</button>
+    <button onclick="press('log(')">log</button><button onclick="press('Math.sqrt(')">√</button><button onclick="press('^')" id="pow">xʸ</button><button class="op" onclick="press('-')">−</button>
+    <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button class="op" onclick="press('+')">+</button>
+    <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button class="op" onclick="press('%')">%</button>
+    <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button onclick="press('Math.PI')">π</button>
+    <button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="press('Math.E')">e</button><button class="eq" onclick="calc()">=</button>
+  </div>
+</div>
+<script>
+const d=document.getElementById('display');
+function press(v){ d.value = d.value===''||d.value==='Error' ? (v.match(/\d|\./)?v:v) : d.value+v; }
+function clearD(){ d.value=''; }
+function calc(){
+  try{
+    let expr = d.value.replace(/\^/g,'**');
+    expr = expr.replace(/(\d)\s*%/g, '($1/100)');
+    d.value = Function('"use strict";return ('+expr+')')();
+  }catch(e){ d.value='Error'; }
+}
+</script>
+</body>
+</html>

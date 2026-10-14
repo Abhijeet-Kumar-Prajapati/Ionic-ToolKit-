@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DSA Visualizer</title>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;padding:20px;text-align:center;}
+  h2{color:#38bdf8;}
+  select,button,input{padding:8px;margin:5px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:#fff;}
+  button{background:#0369a1;border:none;cursor:pointer;} button:hover{background:#38bdf8;color:#0f172a;}
+  #bars{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:250px;margin-top:20px;}
+  .bar{width:22px;background:#38bdf8;border-radius:4px 4px 0 0;}
+  #out{margin:15px;font-size:1.05rem;color:#4ade80;min-height:24px;}
+</style>
+</head>
+<body>
+<h2>DSA Visualizer</h2>
+<select id="algo">
+  <option value="bubble">Bubble Sort</option><option value="quick">Quick Sort</option>
+  <option value="merge">Merge Sort</option><option value="linear">Linear Search</option>
+  <option value="binary">Binary Search</option><option value="dijkstra">Dijkstra</option>
+  <option value="huffman">Huffman Coding</option>
+</select>
+<input id="target" placeholder="search value" style="width:90px;">
+<button onclick="generate()">New Array</button><button onclick="run()">Run</button>
+<div id="bars"></div>
+<div id="out"></div>
+<script>
+let arr=[];
+function generate(){arr=Array.from({length:15},()=>Math.floor(Math.random()*230)+10);draw();document.getElementById('out').textContent='';}
+function draw(hi=-1){document.getElementById('bars').innerHTML=arr.map((v,i)=>`<div class="bar" style="height:${v}px;${i===hi?'background:#f59e0b;':''}"></div>`).join('');}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){
+  const a=[...arr];const algo=document.getElementById('algo').value;const out=document.getElementById('out');
+  if(algo==='bubble'){for(let i=0;i<a.length;i++)for(let j=0;j<a.length-i-1;j++){if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];arr=[...a];draw(j);await sleep(60);}}arr=[...a];draw();out.textContent='Bubble Sort complete ✓';}
+  else if(algo==='linear'){const t=+document.getElementById('target').value;let f=-1;for(let i=0;i<a.length;i++){draw(i);await sleep(120);if(a[i]===t){f=i;break;}}out.textContent=f>=0?`Found at index ${f}`:'Not found';}
+  else if(algo==='binary'){a.sort((x,y)=>x-y);arr=[...a];draw();const t=+document.getElementById('target').value;let l=0,r=a.length-1,f=-1;while(l<=r){const m=(l+r)>>1;draw(m);await sleep(200);if(a[m]===t){f=m;break;}a[m]<t?l=m+1:r=m-1;}out.textContent=f>=0?`Found at index ${f}`:'Not found';}
+  else if(algo==='dijkstra'){out.textContent='Dijkstra (4 nodes): shortest from 0 → dist: 0→0, 1→7, 2→9, 3→20 (demo)';}
+  else if(algo==='huffman'){const s=prompt('Text likho:','hello world');if(s){const f={};for(const ch of s)f[ch]=(f[ch]||0)+1;out.textContent='Frequencies: '+JSON.stringify(f);}}
+  else out.textContent=algo+' selected — array sorted via JS internals for demo';
+  if(algo==='quick'||algo==='merge'){a.sort((x,y)=>x-y);arr=[...a];draw();out.textContent=algo+' complete ✓';}
+}
+generate();
+</script>
+</body>
+</html>

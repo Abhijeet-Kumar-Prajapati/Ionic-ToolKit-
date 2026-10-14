@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Library Management System</title>
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;padding:20px;}
+  h2{color:#38bdf8;text-align:center;}
+  .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:15px 0;}
+  input{padding:8px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:#fff;}
+  button{padding:8px 14px;border:none;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;margin:2px;}
+  button:hover{background:#38bdf8;color:#0f172a;}
+  table{width:100%;border-collapse:collapse;background:#1e293b;}
+  th,td{border:1px solid #334155;padding:8px;text-align:left;}
+  th{background:#0369a1;}
+</style>
+</head>
+<body>
+<h2>Library Management System</h2>
+<div class="form">
+  <input id="id" placeholder="Book ID"><input id="title" placeholder="Title"><input id="author" placeholder="Author">
+  <input id="pub" placeholder="Publisher"><input id="year" placeholder="Year"><input id="isbn" placeholder="ISBN"><input id="copies" placeholder="Copies">
+</div>
+<div style="text-align:center;">
+  <button onclick="addBook()">Add</button><button onclick="deleteBook()">Delete by ID</button><button onclick="clearAll()">Clear All</button>
+</div>
+<table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Publisher</th><th>Year</th><th>ISBN</th><th>Copies</th></tr></thead>
+<tbody id="tbody"></tbody></table>
+<script>
+let books = JSON.parse(localStorage.getItem('books')||'[]');
+function save(){ localStorage.setItem('books',JSON.stringify(books)); }
+function render(){
+  document.getElementById('tbody').innerHTML = books.map(b=>`<tr><td>${b.id}</td><td>${b.title}</td><td>${b.author}</td><td>${b.pub}</td><td>${b.year}</td><td>${b.isbn}</td><td>${b.copies}</td></tr>`).join('');
+}
+function addBook(){
+  const b={id:val('id'),title:val('title'),author:val('author'),pub:val('pub'),year:val('year'),isbn:val('isbn'),copies:val('copies')};
+  if(!b.id||!b.title){alert('ID aur Title zaroori hai');return;}
+  books.push(b); save(); render(); clearFields();
+}
+function deleteBook(){ const id=val('id'); books=books.filter(b=>b.id!==id); save(); render(); }
+function clearAll(){ if(confirm('Sab delete karun?')){books=[];save();render();} }
+function val(i){return document.getElementById(i).value;}
+function clearFields(){['id','title','author','pub','year','isbn','copies'].forEach(i=>document.getElementById(i).value='');}
+render();
+</script>
+</body>
+</html>

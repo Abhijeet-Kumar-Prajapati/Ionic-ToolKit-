@@ -1,0 +1,587 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ionic ToolKit</title>
+<link rel="manifest" href="manifest.json">
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;}
+body{background:#0f172a;color:#e2e8f0;}
+header{background:#1e293b;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:10;}
+header h1{font-size:1.3rem;color:#38bdf8;}
+nav{display:flex;gap:8px;flex-wrap:wrap;}
+nav button{background:#334155;color:#e2e8f0;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;}
+nav button:hover,nav button.active{background:#38bdf8;color:#0f172a;}
+section{display:none;padding:20px;min-height:70vh;}
+section.active{display:block;}
+.module{background:#1e293b;border-radius:12px;padding:20px;max-width:800px;margin:0 auto;}
+h2{color:#38bdf8;text-align:center;margin-bottom:12px;}
+input,textarea,select{background:#0f172a;color:#fff;border:1px solid #334155;border-radius:6px;padding:8px;margin:4px;}
+button{padding:9px 14px;border:none;border-radius:6px;background:#0369a1;color:#fff;cursor:pointer;margin:4px;}
+button:hover{background:#38bdf8;color:#0f172a;}
+table{width:100%;border-collapse:collapse;margin-top:12px;}
+th,td{border:1px solid #334155;padding:8px;text-align:left;}
+th{background:#0369a1;}
+#display{width:100%;height:55px;font-size:1.6rem;text-align:right;border:none;border-radius:8px;background:#0f172a;color:#38bdf8;margin-bottom:12px;padding:10px;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.grid button{padding:12px;font-size:1rem;background:#334155;}
+.grid .op{background:#0369a1;}
+.grid .eq{background:#16a34a;grid-column:span 2;}
+.grid .clr{background:#dc2626;}
+canvas{background:#0f172a;border-radius:10px;margin-top:10px;display:block;margin-left:auto;margin-right:auto;max-width:100%;}
+#bars{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:250px;margin-top:20px;flex-wrap:wrap;}
+.bar{width:22px;background:#38bdf8;border-radius:4px 4px 0 0;}
+pre{background:#0f172a;padding:12px;border-radius:8px;display:inline-block;text-align:left;white-space:pre-wrap;}
+.dlbtn{display:block;background:#334155;color:#fff;padding:10px;border-radius:8px;text-decoration:none;text-align:center;} .dlbtn:hover{background:#38bdf8;color:#0f172a;}
+.logo{font-size:1.5rem;animation:bob 2s ease-in-out infinite;}
+.aname{background:linear-gradient(90deg,#38bdf8,#a78bfa,#f59e0b,#38bdf8);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:grad 3s linear infinite;}
+@keyframes grad{to{background-position:200% center;}}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.node{padding:10px 14px;border-radius:10px;font-weight:bold;animation:pulse 1.6s ease-in-out infinite;}
+.arrow{font-size:1.2rem;animation:move 1s ease-in-out infinite;}
+.tech{background:#334155;padding:4px 10px;border-radius:20px;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+@keyframes move{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+body.light{background:#e2e8f0;color:#0f172a;}
+body.light header{background:#cbd5e1;color:#0f172a;}
+body.light header h1,body.light h2,body.light h3{color:#0369a1;}
+body.light .module,body.light .card{background:#f8fafc;color:#0f172a;border-color:#cbd5e1;}
+body.light nav button{background:#64748b;color:#fff;}
+body.light input,body.light textarea,body.light select,body.light table,body.light pre,body.light #cpOut,body.light #cpCodeWrap,body.light #aiLog,body.light #brFrame{background:#fff;color:#0f172a;}
+body.light th{background:#0369a1;color:#fff;}
+body.light footer{background:#cbd5e1;color:#0f172a;}
+footer{text-align:center;padding:8px;background:#1e293b;font-size:.8rem;color:#94a3b8;}
+</style>
+</head>
+<body>
+<header>
+<h1 class="logo">🛠️ <span class="aname">Ionic ToolKit</span> ⚡</h1>
+<nav>
+<button class="active" onclick="show('home',this)">Home</button>
+<button onclick="show('calc',this)">Calculator</button>
+<button onclick="show('lib',this)">Library</button>
+<button onclick="show('snake',this)">Snake</button>
+<button onclick="show('dsa',this)">DSA</button>
+<button onclick="show('matrix',this)">Matrix</button>
+<button onclick="show('coding',this)" style="background:#7c3aed;">Coding Test</button>
+<button onclick="show('ai',this)" style="background:#0ea5e9;">AI Chat</button>
+<button onclick="show('browser',this)" style="background:#475569;">Browser</button>
+<button onclick="show('speedtest',this)" style="background:#16a34a;">Speed Test</button>
+</nav>
+<div style="display:flex;gap:6px;align-items:center;">
+<select id="themeSel" onchange="applyTheme()" style="width:auto;padding:4px;"><option value="dark">🌙 Dark</option><option value="light">☀️ Light</option></select>
+<select id="langSel" onchange="applyLang()" style="width:auto;padding:4px;"><option value="en">English</option><option value="hi">हिन्दी</option></select>
+</div>
+</header>
+
+<section id="home" class="active">
+<div class="module" style="max-width:1100px;">
+<h2 id="homeH2" style="text-align:center;">🚀 Ionic ToolKit — Dashboard</h2>
+<p id="introP" style="text-align:center;color:#94a3b8;">Everything runs in the browser — no install needed. Each module works standalone as well as in combination.</p>
+
+<h3 id="flowH3" style="margin:14px 0 8px;">🔄 How It Works (Flowchart)</h3>
+<div style="background:#0f172a;border-radius:12px;padding:18px;text-align:center;">
+<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;">
+<div class="node" style="background:#0369a1;">👨‍🎓 User</div>
+<div class="arrow">➡️</div>
+<div class="node" style="background:#7c3aed;">🖥️ index.html (Main)</div>
+<div class="arrow">➡️</div>
+<div class="node" style="background:#16a34a;">🧩 Modules</div>
+<div class="arrow">➡️</div>
+<div class="node" style="background:#f59e0b;color:#0f172a;">⚙️ JS/CSS/HTML</div>
+<div class="arrow">➡️</div>
+<div class="node" style="background:#dc2626;">📊 Output / Result</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin-top:14px;">
+<div class="node" style="background:#0ea5e9;">🧮 Calculator</div>
+<div class="node" style="background:#0ea5e9;">📚 Library</div>
+<div class="node" style="background:#0ea5e9;">🐍 Snake</div>
+<div class="node" style="background:#0ea5e9;">📈 DSA</div>
+<div class="node" style="background:#0ea5e9;">🔢 Matrix</div>
+<div class="node" style="background:#0ea5e9;">💻 Coding Test</div>
+<div class="node" style="background:#0ea5e9;">🤖 AI Chat</div>
+<div class="node" style="background:#0ea5e9;">🌐 Browser</div>
+</div>
+</div>
+
+<h3 id="modH3" style="margin:16px 0 8px;">📋 What Each Module Does</h3>
+<table>
+<thead><tr><th>Module</th><th>What it does</th><th>Tech used</th></tr></thead>
+<tbody>
+<tr><td>🧮 Scientific Calculator</td><td>Trig, log, factorial, memory, DEG/RAD</td><td>HTML, CSS, JavaScript (Math.js jaisa)</td></tr>
+<tr><td>📚 Library Management</td><td>Book add/delete/edit/search/sort, issue, CSV export</td><td>JS, localStorage</td></tr>
+<tr><td>🐍 Snake Game</td><td>Level, obstacle, score, sound, pause</td><td>HTML5 Canvas, JS</td></tr>
+<tr><td>📈 DSA Visualizer</td><td>Bubble/Quick/Merge/Selection/Insertion, Search, Dijkstra, Huffman</td><td>JS, Canvas, Animation</td></tr>
+<tr><td>🔢 Matrix Ops</td><td>Add, Multiply, Transpose, Determinant, Identity, Scalar</td><td>JS Math</td></tr>
+<tr><td>💻 Coding Platform</td><td>Login, Problems, Timer, Judge, Anti-Cheat, Records</td><td>JS, localStorage</td></tr>
+<tr><td>🤖 AI Chat</td><td>Chat / search with AI</td><td>Web Fetch API</td></tr>
+<tr><td>🌐 Browser</td><td>Open websites / search (in new tab)</td><td>window.open, JS</td></tr>
+<tr><td>📶 Speed Test</td><td>Download / Upload / Ping speed</td><td>Fetch API, Canvas animation</td></tr>
+</tbody>
+</table>
+
+<h3 id="featH3" style="margin:16px 0 8px;">⚙️ Realistic Features</h3>
+<ul id="featList" style="margin-left:18px;line-height:1.8;">
+<li><b>Modules run standalone</b> — each module has its own HTML file in the modules/ folder, can open directly in a browser.</li>
+<li><b>Works like a single app</b> — one dashboard with all tabs on one page.</li>
+<li><b>Offline support</b> — service worker (sw.js) caches files.</li>
+<li><b>PWA / Install</b> — "Install app" adds an app icon to the home screen.</li>
+<li><b>No backend / DB</b> — everything runs in the browser, saved in localStorage.</li>
+</ul>
+
+<h3 id="techH3" style="margin:16px 0 8px;">🧱 Tech Stack Used</h3>
+<div style="display:flex;flex-wrap:wrap;gap:8px;">
+<span class="tech">HTML5</span><span class="tech">CSS3</span><span class="tech">JavaScript (ES6+)</span><span class="tech">Canvas API</span><span class="tech">localStorage</span><span class="tech">Fetch API</span><span class="tech">Service Worker (PWA)</span><span class="tech">DOM</span><span class="tech">eval (judge)</span>
+</div>
+</div>
+</section>
+
+<section id="calc">
+<div class="module" style="max-width:440px;">
+<h2>Scientific Calculator</h2>
+<div id="chistory" style="height:20px;text-align:right;color:#64748b;font-size:.85rem;"></div>
+<input id="cdisplay" readonly placeholder="0" style="width:100%;height:60px;font-size:1.8rem;text-align:right;padding:12px;border:none;border-radius:10px;background:#0f172a;color:#38bdf8;margin-bottom:10px;border:1px solid #334155;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+<span>Mode: <b id="cmode">DEG</b></span>
+<button onclick="ctogMode()" style="background:#334155;">DEG/RAD</button>
+<button onclick="ctogInv()" style="background:#f59e0b;color:#0f172a;">INV <b id="cinv">OFF</b></button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;">
+<button style="background:#7c3aed;" onclick="cmemC()">MC</button><button style="background:#7c3aed;" onclick="cmemR()">MR</button><button style="background:#7c3aed;" onclick="cmemA()">M+</button><button style="background:#7c3aed;" onclick="cmemS()">M-</button><button style="background:#7c3aed;" onclick="cmemSv()">MS</button>
+<button style="background:#dc2626;" onclick="cClear()">C</button><button style="background:#0e7490;" onclick="cBack()">⌫</button><button style="background:#0e7490;" onclick="cP('(')">(</button><button style="background:#0e7490;" onclick="cP(')')">)</button><button style="background:#0369a1;" onclick="cP('/')">÷</button>
+<button style="background:#0e7490;" onclick="cFunc('sin')">sin</button><button style="background:#0e7490;" onclick="cFunc('cos')">cos</button><button style="background:#0e7490;" onclick="cFunc('tan')">tan</button><button style="background:#0e7490;" onclick="cP('log(')">log</button><button style="background:#0369a1;" onclick="cP('*')">×</button>
+<button style="background:#0e7490;" onclick="cFunc('asin')">sin⁻¹</button><button style="background:#0e7490;" onclick="cFunc('acos')">cos⁻¹</button><button style="background:#0e7490;" onclick="cFunc('atan')">tan⁻¹</button><button style="background:#0e7490;" onclick="cP('ln(')">ln</button><button style="background:#0369a1;" onclick="cP('-')">−</button>
+<button onclick="cP('7')">7</button><button onclick="cP('8')">8</button><button onclick="cP('9')">9</button><button style="background:#0e7490;" onclick="cP('Math.sqrt(')">√</button><button style="background:#0369a1;" onclick="cP('+')">+</button>
+<button onclick="cP('4')">4</button><button onclick="cP('5')">5</button><button onclick="cP('6')">6</button><button style="background:#0e7490;" onclick="cP('^2')">x²</button><button style="background:#0369a1;" onclick="cP('%')">%</button>
+<button onclick="cP('1')">1</button><button onclick="cP('2')">2</button><button onclick="cP('3')">3</button><button style="background:#0e7490;" onclick="cP('^3')">x³</button><button style="background:#0e7490;" onclick="cFact()">n!</button>
+<button onclick="cP('0')">0</button><button onclick="cP('.')">.</button><button onclick="cP('Math.PI')">π</button><button style="background:#0e7490;" onclick="cP('**')">xʸ</button><button style="background:#0e7490;" onclick="cP('Math.E')">e</button>
+<button style="background:#16a34a;grid-row:span 2;" onclick="cCalc()">=</button>
+<button style="background:#0e7490;" onclick="cP('1/')">1/x</button><button style="background:#0e7490;" onclick="cP('exp(')">eˣ</button><button style="background:#0e7490;" onclick="cP('^(1/2)')">²√x</button><button class="op" onclick="cP('/')">÷</button>
+</div>
+</div>
+</section>
+
+<section id="lib">
+<div class="module">
+<h2>Library Management</h2>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
+<span style="background:#0f172a;padding:8px 14px;border-radius:8px;">Total: <b id="lstTotal">0</b></span>
+<span style="background:#0f172a;padding:8px 14px;border-radius:8px;">Issued: <b id="lstIssued">0</b></span>
+<span style="background:#0f172a;padding:8px 14px;border-radius:8px;">Available: <b id="lstAvail">0</b></span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;">
+<input id="bid" placeholder="Book ID"><input id="btitle" placeholder="Title"><input id="bauthor" placeholder="Author">
+<input id="bpub" placeholder="Publisher"><input id="byear" placeholder="Year"><input id="bisbn" placeholder="ISBN"><input id="bcopies" placeholder="Copies">
+<select id="lgenre"><option>Fiction</option><option>Science</option><option>History</option><option>Tech</option><option>Other</option></select>
+</div>
+<div style="text-align:center;margin-top:8px;">
+<button onclick="addBook()">Add</button><button style="background:#dc2626;" onclick="delBook()">Delete by ID</button>
+<button style="background:#f59e0b;color:#0f172a;" onclick="editBook()">Edit by ID</button><button onclick="clearBooks()">Clear All</button>
+</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;justify-content:center;">
+<input id="lsearch" placeholder="Search title/author/genre" oninput="render()" style="flex:1;min-width:150px;">
+<select id="lsort" onchange="render()"><option value="title">Sort Title</option><option value="author">Sort Author</option><option value="year">Sort Year</option><option value="copies">Sort Copies</option></select>
+<button onclick="exportCSV()">Export CSV</button><button onclick="toggleIssue()">Toggle Issue</button>
+</div>
+<table><thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Genre</th><th>Year</th><th>Copies</th><th>Status</th></tr></thead><tbody id="btbody"></tbody></table>
+</div>
+</section>
+
+<section id="snake">
+<div class="module" style="text-align:center;max-width:500px;">
+<h2 style="color:#4ade80;text-shadow:0 0 10px #4ade80;">Snake Game Pro</h2>
+<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+<span style="background:#0f172a;padding:6px 10px;border-radius:6px;">Score: <b id="ascore">0</b></span>
+<span style="background:#0f172a;padding:6px 10px;border-radius:6px;">High: <b id="ahigh">0</b></span>
+<span style="background:#0f172a;padding:6px 10px;border-radius:6px;">Level: <b id="alevel">1</b></span>
+<button id="asoundBtn" style="background:#334155;" onclick="toggleSound()">Sound</button>
+</div>
+<div style="position:relative;display:inline-block;">
+<canvas id="gameAdv" width="440" height="440" style="border:3px solid #4ade80;border-radius:12px;max-width:100%;"></canvas>
+<div id="aPanel" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(15,23,42,.95);padding:20px;border-radius:12px;border:2px solid #4ade80;">
+<h3>Snake Game Pro</h3><p style="margin:8px 0;">Arrow keys / swipe / buttons</p><button onclick="startAdv()">Start</button>
+</div>
+</div>
+<div style="margin-top:8px;">
+<button onclick="setAdvDir(0,-1)">Up</button><br>
+<button onclick="setAdvDir(-1,0)">Left</button><button onclick="setAdvDir(0,1)">Down</button><button onclick="setAdvDir(1,0)">Right</button>
+</div>
+</div>
+</section>
+
+<section id="dsa">
+<div class="module" style="text-align:center;">
+<h2>DSA Visualizer</h2>
+<select id="algo">
+<option value="bubble">Bubble Sort</option><option value="quick">Quick Sort</option>
+<option value="merge">Merge Sort</option><option value="select">Selection Sort</option><option value="insert">Insertion Sort</option>
+<option value="linear">Linear Search</option><option value="binary">Binary Search</option>
+<option value="dijkstra">Dijkstra</option><option value="huffman">Huffman</option>
+</select>
+<input id="target" placeholder="search value" style="width:90px;">
+<button onclick="gen()">New Array</button><button onclick="runD()">Run</button>
+<button onclick="speedUp()">Faster</button><button onclick="speedDown()">Slower</button>
+<div style="display:flex;justify-content:center;gap:14px;margin:8px 0;font-size:.85rem;">
+<span><span style="display:inline-block;width:12px;height:12px;background:#38bdf8;border-radius:3px;"></span> Normal</span>
+<span><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:3px;"></span> Active</span>
+<span><span style="display:inline-block;width:12px;height:12px;background:#4ade80;border-radius:3px;"></span> Done</span>
+</div>
+<div id="bars"></div>
+<div id="dout" style="margin:15px;color:#4ade80;"></div>
+</div>
+</section>
+
+<section id="matrix">
+<div class="module" style="text-align:center;">
+<h2>Matrix Operations</h2>
+<p>Format: rows ; se alag, values space se. Example: 1 2;3 4</p>
+<textarea id="m1" rows="4" cols="20">1 2;3 4</textarea>
+<textarea id="m2" rows="4" cols="20">5 6;7 8</textarea><br>
+<button onclick="mop('add')">Add</button><button onclick="mop('mul')">Multiply</button>
+<button onclick="mop('transpose')">Transpose (A)</button><button onclick="mop('det')">Determinant (A)</button>
+<button onclick="mop('scalar')">Scalar×A</button><button onclick="mop('maxmin')">Max/Min (A)</button>
+<button onclick="mop('rev')">Reverse (A)</button><button onclick="mop('identity')">Identity</button>
+<h3>Result:</h3><pre id="mout"></pre>
+</div>
+</section>
+
+<section id="coding">
+<style>
+.card{background:#1e293b;border-radius:10px;padding:16px;margin:10px 0;border:1px solid #334155;}
+.badge{padding:2px 8px;border-radius:10px;font-size:.75rem;margin-left:5px;}
+.easy{background:#16a34a;} .med{background:#f59e0b;color:#0f172a;} .hard{background:#dc2626;}
+#cpTimer{font-size:1.4rem;color:#f59e0b;font-weight:bold;}
+#cpLogBox{max-height:160px;overflow-y:auto;font-family:monospace;font-size:.8rem;background:#0f172a;padding:8px;border-radius:6px;margin-top:8px;}
+#coding canvas{background:#0f172a;border-radius:8px;max-width:100%;}
+#cpproblems,#cprecords,#cpabout{display:none;}
+.cp-layout{display:grid;grid-template-columns:230px 1fr;gap:12px;}
+@media(max-width:800px){.cp-layout{grid-template-columns:1fr;}}
+#cpList{background:#0f172a;border-radius:8px;padding:8px;max-height:520px;overflow-y:auto;}
+.cp-item{padding:8px;border-radius:6px;cursor:pointer;border-bottom:1px solid #1e293b;}
+.cp-item:hover{background:#1e293b;}
+.cp-item b{display:block;}
+#cpCodeWrap{display:flex;border:1px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a;}
+#cpLines{padding:10px 6px;color:#475569;font-family:Consolas,monospace;text-align:right;min-width:34px;user-select:none;border-right:1px solid #1e293b;}
+#cpCode{flex:1;border:none;background:transparent;color:#a5f3fc;padding:10px;font-family:Consolas,monospace;font-size:.85rem;min-height:340px;resize:vertical;}
+#cpOut{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px;font-family:monospace;font-size:.85rem;margin-top:10px;color:#4ade80;white-space:pre-wrap;min-height:60px;}
+.tabbar{display:flex;gap:6px;margin:8px 0;}
+.tabbar button{background:#334155;} .tabbar button.on{background:#38bdf8;color:#0f172a;}
+.chip{display:inline-block;background:#334155;padding:2px 8px;border-radius:20px;font-size:.75rem;margin:2px;}
+.verdict{padding:4px 12px;border-radius:6px;font-weight:bold;display:inline-block;margin-top:6px;}
+</style>
+<div class="module" style="max-width:1200px;">
+<h2 style="color:#a78bfa;">CodeExam · Coding Test Platform</h2>
+<div style="text-align:center;margin-bottom:10px;">
+<button onclick="cpShow('cplogin')">Login</button><button onclick="cpShow('cpproblems')">Problems</button>
+<button onclick="cpShow('cprecords')">Records</button><button onclick="cpShow('cpabout')">About</button>
+</div>
+
+<div id="cplogin">
+<h3>Student Login</h3>
+<input id="cpSname" placeholder="Student Name" style="max-width:300px;">
+<input id="cpSroll" placeholder="Roll Number" style="max-width:300px;">
+<input id="cpStest" placeholder="Test ID (e.g., TCS-2026)" style="max-width:300px;">
+<br><button onclick="cpLogin()" style="background:#16a34a;">Start Test</button>
+</div>
+
+<div id="cpproblems">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;align-items:center;">
+<h3 id="cpWelcome">Problems</h3><div id="cpTimer">30:00</div>
+</div>
+<div class="cp-layout">
+<div>
+<input id="cpSearch" placeholder="Search problem..." oninput="cpBuildList()" style="width:100%;">
+<div style="display:flex;gap:4px;flex-wrap:wrap;margin:6px 0;">
+<button onclick="cpFilter('all')" class="chip" id="fAll">All</button>
+<button onclick="cpFilter('easy')" class="chip">Easy</button>
+<button onclick="cpFilter('med')" class="chip">Medium</button>
+<button onclick="cpFilter('hard')" class="chip">Hard</button>
+</div>
+<div id="cpList"></div>
+</div>
+<div>
+<h3 id="cpPTitle">Select a problem</h3>
+<p id="cpPDesc" style="color:#94a3b8;"></p>
+<p id="cpPEx" style="color:#4ade80;font-family:monospace;white-space:pre-wrap;"></p>
+<div class="tabbar">
+<button id="tjs" class="on" onclick="cpSetLang('js')">JavaScript</button>
+<button id="tpy" onclick="cpSetLang('py')">Python</button>
+<button id="tcp" onclick="cpSetLang('cpp')">C++</button>
+</div>
+<div id="cpCodeWrap">
+<div id="cpLines"></div>
+<textarea id="cpCode" oninput="cpUpdateLines()" placeholder="// apna code likho..."></textarea>
+</div>
+<div style="margin:8px 0;">
+<button onclick="cpRunCode()" style="background:#0369a1;">▶ Run</button>
+<button onclick="cpSubmitCode()" style="background:#16a34a;">✓ Submit</button>
+<button onclick="cpCopy()" style="background:#475569;">Copy</button>
+<button onclick="cpReset()" style="background:#dc2626;">Reset</button>
+</div>
+<div id="cpOut">Output yahan aayega...</div>
+<div id="cpVerdict"></div>
+<div id="cpLogBox"></div>
+</div>
+</div>
+</div>
+
+<div id="cprecords">
+<h3>Student Records</h3>
+<table><thead><tr><th>Name</th><th>Roll</th><th>Test</th><th>Problem</th><th>Score</th><th>Lang</th><th>Time</th></tr></thead><tbody id="cpRecBody"></tbody></table>
+<h3 style="margin-top:12px;">Score Distribution</h3>
+<canvas id="cpChart" width="600" height="260"></canvas>
+</div>
+
+<div id="cpabout">
+<h3>Kaise Kaam Karta Hai</h3>
+<ul style="margin-left:18px;line-height:1.8;">
+<li>Login → Name/Roll/Test ID se session.</li>
+<li>Problems → Search + Difficulty filter, Easy → Hard.</li>
+<li>Editor → Run = sample, Submit = judge (JS live execute).</li>
+<li>Language → JavaScript (live), Python/C++ (template, JS judge note).</li>
+<li>Timer → 30 min countdown, auto-submit.</li>
+<li>Anti-Cheat → Tab-switch + paste detect karta hai.</li>
+<li>Records → localStorage mein stored, chart graph.</li>
+<li>Graph → Score chart + difficulty graph (adjacency list).</li>
+</ul>
+<h3 style="margin-top:12px;">Difficulty Graph (Adjacency List)</h3>
+<canvas id="cpGgraph" width="600" height="260"></canvas>
+<pre id="cpAdj" style="background:#0f172a;padding:10px;border-radius:8px;"></pre>
+</div>
+</div>
+</section>
+
+<section id="ai">
+<div class="module" style="max-width:700px;">
+<h2>AI Assistant (Chat / Search)</h2>
+<div id="aiLog" style="background:#0f172a;border-radius:8px;padding:12px;height:380px;overflow-y:auto;"><div style="color:#94a3b8;">AI se kuch bhi pucho — coding, doubt, search.</div></div>
+<div style="display:flex;gap:8px;margin-top:10px;">
+<input id="aiInput" placeholder="Sawaal likho..." style="flex:1;" onkeydown="if(event.key==='Enter')aiSend()">
+<button onclick="aiSend()">Send</button>
+</div>
+<p style="color:#64748b;font-size:.8rem;margin-top:6px;">Note: Free public API use karta hai. Agar offline ho to offline reply dega.</p>
+</div>
+</section>
+
+<section id="browser">
+<div class="module" style="max-width:1100px;">
+<h2>Browser</h2>
+<div style="display:flex;gap:8px;margin-bottom:6px;">
+<input id="brUrl" placeholder="URL ya Search likho (jaise google.com ya 'python tutorial')" style="flex:1;" onkeydown="if(event.key==='Enter')brGo()">
+<button onclick="brGo()">Go / Search</button>
+<button onclick="document.getElementById('brUrl').value=''">Clear</button>
+</div>
+<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
+<button onclick="window.open('https://www.google.com','_blank')">Google</button>
+<button onclick="window.open('https://en.wikipedia.org','_blank')">Wikipedia</button>
+<button onclick="window.open('https://www.youtube.com','_blank')">YouTube</button>
+<button onclick="window.open('https://www.google.com/search?q='+encodeURIComponent(document.getElementById('brUrl').value),'_blank')">Google Search</button>
+</div>
+
+</div>
+</section>
+
+<section id="speedtest">
+<div class="module" style="max-width:900px;text-align:center;">
+<h2 style="color:#38bdf8;">🌐 Internet Network Speed Test</h2>
+<p style="color:#94a3b8;">Aapke internet ka real speed (Download / Upload / Ping) — digital gauge par</p>
+
+<div style="background:#0f172a;border-radius:12px;padding:20px;margin:12px 0;position:relative;overflow:hidden;">
+<div style="font-size:3rem;font-weight:900;color:#4ade80;font-family:Courier,monospace;" id="speedValue">0.00</div>
+<div style="color:#94a3b8;">Mbps (<span id="speedLabel">Ready</span>)</div>
+<div style="height:14px;background:#1e293b;border-radius:10px;margin:12px;overflow:hidden;">
+<div id="speedBar" style="height:100%;width:0%;background:linear-gradient(90deg,#38bdf8,#a78bfa,#4ade80);transition:width .3s;"></div>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+<button onclick="runSpeedTest()" style="padding:12px 22px;font-size:1rem;">▶ Start Speed Test</button>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:16px;">
+<div class="card"><h4>📥 Download</h4><div id="dval" style="font-size:1.4rem;color:#38bdf8;">-- Mbps</div></div>
+<div class="card"><h4>📤 Upload</h4><div id="uval" style="font-size:1.4rem;color:#a78bfa;">-- Mbps</div></div>
+<div class="card"><h4>📶 Ping</h4><div id="pval" style="font-size:1.4rem;color:#f59e0b;">-- ms</div></div>
+</div>
+<p id="sstatus" style="margin-top:12px;color:#94a3b8;"></p>
+<p style="color:#64748b;font-size:.8rem;">Note: Ping + download/upload ko internet par real test ke through measure kiya gaya hai (Cloudflare test server). Offline/blocked ho to simulated result dikhega.</p>
+</div>
+</section>
+
+<footer>Ionic ToolKit | All Devices Compatible | All Devices Compatible</footer>
+
+<script>
+function show(id,btn){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+document.getElementById(id).classList.add('active');btn.classList.add('active');
+}
+var cDisp=document.getElementById('cdisplay'),cMem=0,cDeg=true,cInv=false;
+function cDispGet(){return document.getElementById('cdisplay');}
+function cP(v){var x=cDispGet();x.value=(x.value==='Error')?'':x.value+v;}
+function cClear(){cDispGet().value='';document.getElementById('chistory').textContent='';}
+function cBack(){cDispGet().value=cDispGet().value.slice(0,-1);}
+function ctogMode(){cDeg=!cDeg;document.getElementById('cmode').textContent=cDeg?'DEG':'RAD';}
+function ctogInv(){cInv=!cInv;document.getElementById('cinv').textContent=cInv?'ON':'OFF';}
+function cFunc(n){var x=cDispGet();if(cInv&&(n==='sin'||n==='cos'||n==='tan'))n='a'+n;x.value+=n+'(';}
+function cmemC(){cMem=0;} function cmemR(){cDispGet().value+=cMem;} function cmemA(){cMem+=parseFloat(cDispGet().value)||0;}
+function cmemS(){cMem-=parseFloat(cDispGet().value)||0;} function cmemSv(){cMem=parseFloat(cDispGet().value)||0;}
+function cFact(){var n=parseInt(cDispGet().value);if(isNaN(n)||n<0){cDispGet().value='Error';return;}var r=1;for(var i=2;i<=n;i++)r*=i;cDispGet().value=r;}
+function cCalc(){try{var e=cDispGet().value;if(cDeg){e=e.replace(/\bsin\(/g,'sin(Math.PI/180*').replace(/\bcos\(/g,'cos(Math.PI/180*').replace(/\btan\(/g,'tan(Math.PI/180*');}e=e.replace(/\^/g,'**').replace(/%/g,'/100').replace(/\bln\(/g,'Math.log(').replace(/\blog\(/g,'Math.log10(').replace(/\bexp\(/g,'Math.exp(');document.getElementById('chistory').textContent=cDispGet().value;cDispGet().value=Function('"use strict";const sin=Math.sin,cos=Math.cos,tan=Math.tan,asin=Math.asin,acos=Math.acos,atan=Math.atan;return ('+e+')')();}catch(x){cDispGet().value='Error';}}
+
+var books=[];
+try{books=JSON.parse(localStorage.getItem('lib2')||'[]');}catch(e){}
+function save(){try{localStorage.setItem('lib2',JSON.stringify(books));}catch(e){}}
+function v(i){return document.getElementById(i).value;}
+function render(){
+ var q=v('lsearch').toLowerCase(),s=v('lsort');
+ var list=books.filter(function(b){return b.title.toLowerCase().indexOf(q)>=0||b.author.toLowerCase().indexOf(q)>=0||b.genre.toLowerCase().indexOf(q)>=0;});
+ list.sort(function(a,b){var x=a[s],y=b[s];if(s==='year'||s==='copies')return (+x)-(+y);return String(x).localeCompare(String(y));});
+ document.getElementById('btbody').innerHTML=list.map(function(b){return '<tr><td>'+b.id+'</td><td>'+b.title+'</td><td>'+b.author+'</td><td>'+b.genre+'</td><td>'+b.year+'</td><td>'+b.copies+'</td><td>'+(b.issued?'<span style="color:#f59e0b">Issued</span>':'<span style="color:#4ade80">Available</span>')+'</td></tr>';}).join('');
+ document.getElementById('lstTotal').textContent=books.length;
+ document.getElementById('lstIssued').textContent=books.filter(function(b){return b.issued;}).length;
+ document.getElementById('lstAvail').textContent=books.filter(function(b){return !b.issued;}).length;
+}
+function addBook(){var b={id:v('bid'),title:v('btitle'),author:v('bauthor'),pub:v('bpub'),year:v('byear'),isbn:v('bisbn'),copies:v('bcopies'),genre:v('lgenre'),issued:false};if(!b.id||!b.title){alert('ID aur Title zaroori hai');return;}books.push(b);save();render();}
+function delBook(){books=books.filter(function(b){return b.id!==v('bid');});save();render();}
+function editBook(){var b=books.find(function(x){return x.id===v('bid');});if(b){b.title=v('btitle')||b.title;b.author=v('bauthor')||b.author;b.copies=v('bcopies')||b.copies;save();render();}}
+function clearBooks(){if(confirm('Sab delete?')){books=[];save();render();}}
+function toggleIssue(){var b=books.find(function(x){return x.id===v('bid');});if(b){b.issued=!b.issued;save();render();}}
+function exportCSV(){var rows=[['ID','Title','Author','Genre','Year','Copies','Status'].join(',')].concat(books.map(function(b){return [b.id,b.title,b.author,b.genre,b.year,b.copies,b.issued?'Issued':'Available'].join(',');}));var a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(rows.join('\n'));a.download='library.csv';a.click();}
+render();
+
+var acv=document.getElementById('gameAdv'),acx=acv.getContext('2d'),AS=20,AN=22;
+var aSnake,aDir,aNextDir,aFood,aObs,aScore,aLevel,aSpeed,aRunning,aPaused,aTimer,aSound=true;
+var aHigh=parseInt(localStorage.getItem('snakeHigh')||'0');document.getElementById('ahigh').textContent=aHigh;
+function beep(f,d,ty){if(!aSound)return;try{var a=new (window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator(),g=a.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.value=0.08;o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d);}catch(e){}}
+function toggleSound(){aSound=!aSound;document.getElementById('asoundBtn').textContent=aSound?'Sound On':'Mute';}
+function initAdv(){aSnake=[{x:11,y:11},{x:10,y:11},{x:9,y:11}];aDir={x:1,y:0};aNextDir={x:1,y:0};aScore=0;aLevel=1;aSpeed=140;aObs=[];aRunning=true;aPaused=false;spawnAdvFood();document.getElementById('ascore').textContent=0;document.getElementById('alevel').textContent=1;}
+function setAdvDir(x,y){if(x===-aDir.x&&y===-aDir.y)return;aNextDir={x,y};}
+function spawnAdvFood(){aFood={x:Math.floor(Math.random()*AN),y:Math.floor(Math.random()*AN)};}
+function startAdv(){initAdv();document.getElementById('aPanel').style.display='none';advLoop();}
+function makeAdvObs(){aObs=[];for(var i=0;i<(aLevel-1)*4;i++){var o={x:Math.floor(Math.random()*AN),y:Math.floor(Math.random()*AN)};if(Math.abs(o.x-aSnake[0].x)<3&&Math.abs(o.y-aSnake[0].y)<3)continue;aObs.push(o);}}
+function advLoop(){clearTimeout(aTimer);if(!aRunning)return;if(!aPaused){advUpdate();advDraw();}aTimer=setTimeout(advLoop,aSpeed);}
+function advUpdate(){aDir=aNextDir;var h={x:aSnake[0].x+aDir.x,y:aSnake[0].y+aDir.y};
+if(h.x<0||h.x>=AN||h.y<0||h.y>=AN||aSnake.some(function(s){return s.x===h.x&&s.y===h.y;})||aObs.some(function(o){return o.x===h.x&&o.y===h.y;})){aRunning=false;beep(150,.5,'sawtooth');if(aScore>aHigh){aHigh=aScore;try{localStorage.setItem('snakeHigh',aHigh);}catch(e){}document.getElementById('ahigh').textContent=aHigh;}document.getElementById('aPanel').innerHTML='<h3>Game Over</h3><p>Score: '+aScore+'</p><button onclick="startAdv()">Restart</button>';document.getElementById('aPanel').style.display='block';return;}
+aSnake.unshift(h);
+if(h.x===aFood.x&&h.y===aFood.y){aScore+=10;beep(600,.1);document.getElementById('ascore').textContent=aScore;if(aScore>=aLevel*50){aLevel++;aSpeed=Math.max(50,140-(aLevel-1)*15);document.getElementById('alevel').textContent=aLevel;beep(900,.3);makeAdvObs();}spawnAdvFood();}else aSnake.pop();}
+function advDraw(){acx.fillStyle='#0b1220';acx.fillRect(0,0,acv.width,acv.height);
+acx.fillStyle='#475569';aObs.forEach(function(o){acx.fillRect(o.x*AS+2,o.y*AS+2,AS-4,AS-4);});
+acx.fillStyle='#ef4444';acx.beginPath();acx.arc(aFood.x*AS+AS/2,aFood.y*AS+AS/2,AS/2-2,0,7);acx.fill();
+aSnake.forEach(function(s,i){var t=i/aSnake.length;acx.fillStyle=i===0?'#16a34a':('rgb('+Math.round(34+t*20)+','+Math.round(200-t*60)+','+Math.round(80+t*40)+')');acx.fillRect(s.x*AS+1,s.y*AS+1,AS-2,AS-2);if(i===0){acx.fillStyle='white';acx.beginPath();acx.arc(s.x*AS+AS/2,s.y*AS+AS/2,3,0,7);acx.fill();}});}
+document.addEventListener('keydown',function(e){if(!document.getElementById('snake').classList.contains('active'))return;if(e.key==='ArrowUp')setAdvDir(0,-1);if(e.key==='ArrowDown')setAdvDir(0,1);if(e.key==='ArrowLeft')setAdvDir(-1,0);if(e.key==='ArrowRight')setAdvDir(1,0);if(e.key===' '){aPaused=!aPaused;if(!aPaused)advLoop();}});
+
+var arr=[],dSpeed=80;
+function gen(){arr=[];for(var i=0;i<15;i++)arr.push(Math.floor(Math.random()*230)+10);draw();document.getElementById('dout').textContent='';}
+function draw(hi,ok){document.getElementById('bars').innerHTML=arr.map(function(v,i){var c=i===ok?'#4ade80':(i===hi?'#f59e0b':'#38bdf8');return '<div class="bar" style="height:'+v+'px;background:'+c+'"></div>';}).join('');}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function speedUp(){dSpeed=Math.max(10,dSpeed-20);} function speedDown(){dSpeed+=40;}
+function runD(){
+var a=arr.slice(),algo=document.getElementById('algo').value,out=document.getElementById('dout'),cmp=0;
+(async function(){
+if(algo==='bubble'){for(var i=0;i<a.length;i++)for(var j=0;j<a.length-i-1;j++){cmp++;if(a[j]>a[j+1]){var t=a[j];a[j]=a[j+1];a[j+1]=t;arr=a.slice();draw(j);await sleep(dSpeed);}}arr=a.slice();draw();out.textContent='Bubble Sort done. Comparisons: '+cmp;}
+else if(algo==='select'){for(var i=0;i<a.length;i++){var m=i;for(var j=i+1;j<a.length;j++){cmp++;if(a[j]<a[m])m=j;}var t=a[i];a[i]=a[m];a[m]=t;arr=a.slice();draw(i);await sleep(dSpeed);}arr=a.slice();draw();out.textContent='Selection Sort done. Comparisons: '+cmp;}
+else if(algo==='insert'){for(var i=1;i<a.length;i++){var k=a[i],j=i-1;while(j>=0&&a[j]>k){cmp++;a[j+1]=a[j];j--;}a[j+1]=k;arr=a.slice();draw(i);await sleep(dSpeed);}arr=a.slice();draw();out.textContent='Insertion Sort done. Comparisons: '+cmp;}
+else if(algo==='linear'){var t2=+document.getElementById('target').value,f=-1;for(var k=0;k<a.length;k++){cmp++;draw(k);await sleep(dSpeed);if(a[k]===t2){f=k;break;}}draw(f);out.textContent=f>=0?('Found at index '+f+'. Comparisons: '+cmp):'Not found';}
+else if(algo==='binary'){a.sort(function(x,y){return x-y;});arr=a.slice();draw();var t3=+document.getElementById('target').value,l=0,r=a.length-1,f2=-1;while(l<=r){var m=(l+r)>>1;cmp++;draw(m);await sleep(dSpeed*2);if(a[m]===t3){f2=m;break;}if(a[m]<t3)l=m+1;else r=m-1;}draw(f2);out.textContent=f2>=0?('Found at index '+f2+'. Comparisons: '+cmp):'Not found';}
+else if(algo==='dijkstra'){out.textContent='Dijkstra (demo): shortest from 0 -> 0:0, 1:7, 2:9, 3:20';}
+else if(algo==='huffman'){var s=prompt('Text likho:','hello world');if(s){var f3={};for(var c=0;c<s.length;c++)f3[s[c]]=(f3[s[c]]||0)+1;out.textContent='Frequencies: '+JSON.stringify(f3);}}
+else{a.sort(function(x,y){return x-y;});arr=a.slice();draw();out.textContent=algo+' complete (JS internals for demo).';}
+})();
+}
+gen();
+
+function parse(t){return t.split(';').map(function(r){return r.trim().split(/\s+/).map(Number);});}
+function fmt(m){return m.map(function(r){return r.join('\t');}).join('\n');}
+function mdet(m){if(m.length!==m[0].length)return NaN;if(m.length===1)return m[0][0];if(m.length===2)return m[0][0]*m[1][1]-m[0][1]*m[1][0];var d=0;for(var j=0;j<m.length;j++){var sub=m.slice(1).map(function(r){return r.filter(function(_,k){return k!==j;});});d+=((j%2?-1:1)*m[0][j]*mdet(sub));}return d;}
+function mop(k){
+var A=parse(document.getElementById('m1').value),B=parse(document.getElementById('m2').value),out=document.getElementById('mout');
+try{
+if(k==='add'){out.textContent=fmt(A.map(function(r,i){return r.map(function(v,j){return v+B[i][j];});}));}
+else if(k==='mul'){out.textContent=fmt(A.map(function(r,i){return B[0].map(function(_,j){return r.reduce(function(s,v,l){return s+v*B[l][j];},0);});}));}
+else if(k==='transpose'){out.textContent=fmt(A[0].map(function(_,j){return A.map(function(r){return r[j];});}));}
+else if(k==='det'){out.textContent='Determinant: '+mdet(A);}
+else if(k==='scalar'){var s=parseFloat(prompt('Scalar value:','2'));out.textContent=fmt(A.map(function(r){return r.map(function(v){return v*s;});}));}
+else if(k==='maxmin'){var f=[].concat.apply([],A);out.textContent='Max: '+Math.max.apply(null,f)+'\nMin: '+Math.min.apply(null,f);}
+else if(k==='rev'){var flat=[].concat.apply([],A).reverse(),cols=A[0].length;out.textContent=fmt(flat.reduce(function(acc,v,i){var r=Math.floor(i/cols);(acc[r]=acc[r]||[]).push(v);return acc;},[]));}
+else if(k==='identity'){var n=A.length;out.textContent=fmt(Array.from({length:n},function(_,i){return Array.from({length:n},function(_,j){return i===j?1:0;});}));}
+}catch(e){out.textContent='Invalid input';}
+}
+function brGo(){var u=document.getElementById('brUrl').value.trim();if(!u)return;if(u.indexOf(' ')<0&&u.indexOf('.')>=0){if(!/^https?:\/\//i.test(u))u='https://'+u;window.open(u,'_blank');}else{window.open('https://www.google.com/search?q='+encodeURIComponent(u),'_blank');}}
+function runSpeedTest(){
+ var sv=document.getElementById('speedValue'),sb=document.getElementById('speedBar'),sl=document.getElementById('speedLabel'),st=document.getElementById('sstatus');
+ st.textContent='Ping test...'; sv.textContent='0.00'; sb.style.width='0%'; sl.textContent='Ping';
+ var t0=performance.now();
+ fetch('https://speed.cloudflare.com/__down?bytes=0&cachebust='+Date.now()).then(function(){document.getElementById('pval').textContent=Math.round(performance.now()-t0)+' ms';st.textContent='Download test...';downloadTest();}).catch(function(){document.getElementById('pval').textContent='--';st.textContent='Download test...';downloadTest();});
+ function downloadTest(){
+  var bytes=10*1024*1024, st2=performance.now();
+  fetch('https://speed.cloudflare.com/__down?bytes='+bytes+'&cachebust='+Date.now()).then(function(r){return r.blob();}).then(function(){var dt=(performance.now()-st2)/1000;var mbps=(bytes*8/dt/1024/1024).toFixed(2);document.getElementById('dval').textContent=mbps+' Mbps';sv.textContent=mbps;sb.style.width=Math.min(100,mbps*2)+'%';sl.textContent='Download';st.textContent='Upload test...';uploadTest();}).catch(function(){document.getElementById('dval').textContent='Error';st.textContent='Offline / blocked — simulated data dikh rahi hai.';simulateAll();});
+ }
+ function uploadTest(){
+  var data=new Uint8Array(1024*512);var st3=performance.now();
+  fetch('https://speed.cloudflare.com/__up',{method:'POST',body:data}).then(function(){var dt=(performance.now()-st3)/1000;var mbps=(data.length*8/dt/1024/1024).toFixed(2);document.getElementById('uval').textContent=mbps+' Mbps';sv.textContent=mbps;sb.style.width=Math.min(100,mbps*2)+'%';sl.textContent='Upload';st.textContent='Test complete ✓';}).catch(function(){document.getElementById('uval').textContent='--';st.textContent='Test complete (upload blocked) ✓';});
+ }
+ function simulateAll(){var d=(Math.random()*90+10).toFixed(2),u=(Math.random()*40+5).toFixed(2),p=Math.round(Math.random()*50+10);document.getElementById('dval').textContent=d+' Mbps';document.getElementById('uval').textContent=u+' Mbps';document.getElementById('pval').textContent=p+' ms';sv.textContent=d;sb.style.width=Math.min(100,d*2)+'%';st.textContent='Simulated result (internet blocked).';}
+}
+function aiSend(){
+ var inp=document.getElementById('aiInput'),msg=inp.value.trim();if(!msg)return;
+ var log=document.getElementById('aiLog');log.innerHTML+='<div style="margin-top:8px;"><b style="color:#38bdf8;">You:</b> '+msg+'</div>';inp.value='';
+ var lid='ai'+Date.now();log.innerHTML+='<div id="'+lid+'" style="margin-top:4px;color:#a5f3fc;"><b style="color:#4ade80;">AI:</b> Soch raha hoon...</div>';log.scrollTop=log.scrollHeight;
+ fetch('https://text.pollinations.ai/'+encodeURIComponent(msg)).then(function(r){return r.text();}).then(function(t){document.getElementById(lid).innerHTML='<b style="color:#4ade80;">AI:</b> '+t.replace(/\n/g,'<br>');}).catch(function(){document.getElementById(lid).innerHTML='<b style="color:#4ade80;">AI:</b> (Offline) Main AI hoon. "'+msg+'" ke baare me online hone par aapko detailed jawab dunga. Aap calculator/library/DSA use kar sakte ho, ya browser tab me search karo.';});
+}
+</script>
+<script>
+var cpUser=null,cpTimerInt,cpTimeLeft=1800,cpSwitch=0,cpPaste=0,cpProb=null,cpFilterV='all',cpLangV='js';
+var cpProblems=[
+{id:1,title:'Two Sum',diff:'easy',desc:'Array mein 2 numbers dhoondo jinka sum target ho (index return karo).',ex:'Input: [2,7,11,15], 9\nOutput: [0,1]',fn:'twoSum',tests:[[[2,7,11,15],9],[[3,2,4],6],[[3,3],6]],ans:[[0,1],[1,2],[0,1]]},
+{id:2,title:'Reverse String',diff:'easy',desc:'String reverse karo.',ex:'Input: "hello"\nOutput: "olleh"',fn:'revStr',tests:[['hello'],['abc'],['a']],ans:['olleh','cba','a']},
+{id:3,title:'Palindrome Check',diff:'easy',desc:'String palindrome hai ya nahi.',ex:'Input: "madam"\nOutput: true',fn:'isPal',tests:[['madam'],['abc'],['racecar']],ans:[true,false,true]},
+{id:4,title:'Factorial',diff:'med',desc:'n ka factorial nikalo.',ex:'Input: 5\nOutput: 120',fn:'fact',tests:[[0],[5],[6]],ans:[1,120,720]},
+{id:5,title:'Fibonacci',diff:'med',desc:'n-th Fibonacci number nikalo.',ex:'Input: 6\nOutput: 8',fn:'fib',tests:[[0],[1],[6],[10]],ans:[0,1,8,55]},
+{id:6,title:'Max Subarray',diff:'med',desc:'Kadane ka use karke max sum subarray.',ex:'Input: [-2,1,-3,4,-1,2,1,-5,4]\nOutput: 6',fn:'maxSub',tests:[[[-2,1,-3,4,-1,2,1,-5,4]],[[1]],[[5,4,-1,7,8]]],ans:[6,1,23]},
+{id:7,title:'Valid Parentheses',diff:'med',desc:'Brackets valid hain ya nahi.',ex:'Input: "()[]{}"\nOutput: true',fn:'validPar',tests:[['()[]{}'],['(]'],['([{}])']],ans:[true,false,true]},
+{id:8,title:'Binary Search',diff:'med',desc:'Sorted array mein target ka index dhoondo.',ex:'Input: [1,3,5,7,9], 5\nOutput: 2',fn:'bSearch',tests:[[[1,3,5,7,9],5],[[1,2,3],4],[[2,4,6],2]],ans:[2,-1,0]},
+{id:9,title:'Merge Two Sorted',diff:'med',desc:'Do sorted arrays ko merge karo.',ex:'Input: [1,3,5],[2,4,6]\nOutput: [1,2,3,4,5,6]',fn:'mergeArr',tests:[[[1,3,5],[2,4,6]],[[1,2],[3]],[[],[1]]],ans:[[1,2,3,4,5,6],[1,2,3],[1]]},
+{id:10,title:'Anagram Check',diff:'easy',desc:'Do strings anagram hain ya nahi.',ex:'Input: "listen","silent"\nOutput: true',fn:'isAnag',tests:[['listen','silent'],['abc','abd'],['a','a']],ans:[true,false,true]},
+{id:11,title:'Dijkstra Path',diff:'hard',desc:'Graph mein shortest distance (demo).',ex:'Input: src=0\nOutput: 0',fn:'dijkstra',tests:[[0],[1]],ans:[0,7]},
+{id:12,title:'Knapsack 0-1',diff:'hard',desc:'Max value knapsack (demo).',ex:'Input: weights, values, capacity\nOutput: max',fn:'knap',tests:[[[10,20,30],[60,100,120],50]],ans:[220]},
+{id:13,title:'LCS Length',diff:'hard',desc:'Longest common subsequence length.',ex:'Input: "abcde","ace"\nOutput: 3',fn:'lcs',tests:[['abcde','ace'],['abc','def'],['abc','abc']],ans:[3,0,3]},
+{id:14,title:'Quick Sort',diff:'med',desc:'Array ko quick sort se sort karo.',ex:'Input: [3,1,4,1,5]\nOutput: [1,1,3,4,5]',fn:'qSort',tests:[[[3,1,4,1,5]],[[5,4,3,2,1]],[[1]]],ans:[[1,1,3,4,5],[1,2,3,4,5],[1]]},
+{id:15,title:'Rotate Array',diff:'easy',desc:'Array ko k positions rotate karo.',ex:'Input: [1,2,3,4,5],2\nOutput: [4,5,1,2,3]',fn:'rotArr',tests:[[[1,2,3,4,5],2],[[1,2],1],[[1],0]],ans:[[4,5,1,2,3],[2,1],[1]]}
+];
+function cpShow(id){['cplogin','cpproblems','cprecords','cpabout'].forEach(function(x){document.getElementById(x).style.display='none';});document.getElementById(id).style.display='block';if(id==='cprecords')cpDrawRecords();if(id==='cpabout')cpDrawGraph();}
+function cpLog(msg){var l=document.getElementById('cpLogBox');l.innerHTML+='['+new Date().toLocaleTimeString()+'] '+msg+'<br>';l.scrollTop=l.scrollHeight;}
+function cpLogin(){cpUser={name:document.getElementById('cpSname').value,roll:document.getElementById('cpSroll').value,test:document.getElementById('cpStest').value};if(!cpUser.name)return alert('Name daalo');document.getElementById('cpWelcome').textContent='Welcome, '+cpUser.name;cpBuildList();cpShow('cpproblems');cpStartTimer();cpLog('Login as '+cpUser.name);}
+function cpFilter(v){cpFilterV=v;cpBuildList();}
+function cpBuildList(){
+ var q=document.getElementById('cpSearch').value.toLowerCase();
+ var list=cpProblems.filter(function(p){return (cpFilterV==='all'||p.diff===cpFilterV)&&(p.title.toLowerCase().indexOf(q)>=0||p.desc.toLowerCase().indexOf(q)>=0);});
+ document.getElementById('cpList').innerHTML=list.map(function(p){return '<div class="cp-item" onclick="cpOpenProb('+p.id+')"><b>'+p.id+'. '+p.title+'</b><span class="badge '+(p.diff==='easy'?'easy':p.diff==='med'?'med':'hard')+'">'+p.diff+'</span></div>';}).join('');
+}
+function cpSetLang(l){cpLangV=l;['js','py','cpp'].forEach(function(x){document.getElementById('t'+x).classList.remove('on');});document.getElementById('t'+l).classList.add('on');if(cpProb)cpLoadTemplate();}
+function cpLoadTemplate(){
+ var fn=cpProb.fn;
+ if(cpLangV==='js')document.getElementById('cpCode').value='// '+fn+' likho\nfunction '+fn+'(){\n  \n}';
+ else if(cpLangV==='py')document.getElementById('cpCode').value='# '+fn+' likho\ndef '+fn+'():\n    pass\n# Note: Live judge JavaScript me chalta hai.';
+ else document.getElementById('cpCode').value='// '+fn+'\nint '+fn+'(){\n  return 0;\n}\n// Note: Live judge JavaScript me chalta hai.';
+ cpUpdateLines();
+}
+function cpOpenProb(id){cpProb=cpProblems.find(function(p){return p.id===id;});document.getElementById('cpPTitle').textContent=cpProb.id+'. '+cpProb.title+' <span class="badge '+(cpProb.diff==='easy'?'easy':cpProb.diff==='med'?'med':'hard')+'">'+cpProb.diff+'</span>';document.getElementById('cpPDesc').textContent=cpProb.desc;document.getElementById('cpPEx').textContent=cpProb.ex;document.getElementById('cpOut').textContent='Output yahan aayega...';document.getElementById('cpVerdict').innerHTML='';cpLoadTemplate();cpLog('Opened: '+cpProb.title);}
+function cpUpdateLines(){var t=document.getElementById('cpCode').value;var n=t.split('\n').length;var out='';for(var i=1;i<=n;i++)out+=i+'<br>';document.getElementById('cpLines').innerHTML=out;}
+function cpCopy(){navigator.clipboard.writeText(document.getElementById('cpCode').value);cpLog('Code copied');}
+function cpReset(){if(cpProb)cpLoadTemplate();cpLog('Editor reset');}
+function cpStartTimer(){clearInterval(cpTimerInt);cpTimeLeft=1800;cpTimerInt=setInterval(function(){cpTimeLeft--;var m=Math.floor(cpTimeLeft/60),s=cpTimeLeft%60;document.getElementById('cpTimer').textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(cpTimeLeft<=0){clearInterval(cpTimerInt);alert('Time up! Auto submit.');cpSubmitCode();}},1000);}
+function cpRunCode(){if(!cpProb)return cpLog('Pahle problem kholo');document.getElementById('cpOut').textContent='';try{var src=document.getElementById('cpCode').value;window.eval(src);var fn=window[cpProb.fn];if(!fn){document.getElementById('cpOut').textContent='Error: function '+cpProb.fn+' nahi mila.\nPython/C++ select kiya hai? Live judge JavaScript me chalta hai.';return;}var t=cpProb.tests[0];var r=fn.apply(null,t);document.getElementById('cpOut').textContent='Sample Input: '+JSON.stringify(t)+'\nYour Output: '+JSON.stringify(r)+'\nExpected:   '+JSON.stringify(cpProb.ans[0]);}catch(e){document.getElementById('cpOut').textContent='Error: '+e.message;}}
+function cpSubmitCode(){if(!cpProb)return cpLog('Pahle problem kholo');if(!cpUser)return cpLog('Pahle login karo');document.getElementById('cpOut').textContent='';try{var src=document.getElementById('cpCode').value;window.eval(src);var fn=window[cpProb.fn];if(!fn){document.getElementById('cpVerdict').innerHTML='<span class="verdict" style="background:#dc2626;">Error: function '+cpProb.fn+' nahi mila</span>';return;}var pass=0,details='';for(var i=0;i<cpProb.tests.length;i++){var r=fn.apply(null,cpProb.tests[i]);var ok=JSON.stringify(r)===JSON.stringify(cpProb.ans[i]);if(ok)pass++;details+='Test '+(i+1)+': '+(ok?'PASS':'FAIL')+' (got '+JSON.stringify(r)+')\n';}var score=Math.round(pass/cpProb.tests.length*100);document.getElementById('cpOut').textContent=details;var v=document.getElementById('cpVerdict');v.innerHTML='<span class="verdict" style="background:'+(score===100?'#16a34a':score>=50?'#f59e0b':'#dc2626')+';">'+(score===100?'Accepted ✓':score>=50?'Partially Correct':'Wrong Answer')+' · '+score+'% ('+pass+'/'+cpProb.tests.length+' passed)</span>';cpLog('Submitted. Score: '+score+'% · '+cpLangV);cpSaveRecord(score);}catch(e){document.getElementById('cpOut').textContent='Error: '+e.message;}}
+function cpSaveRecord(score){var rec=[];try{rec=JSON.parse(localStorage.getItem('examRecs')||'[]');}catch(e){}rec.push({name:cpUser.name,roll:cpUser.roll,test:cpUser.test,prob:cpProb.title,score:score,lang:cpLangV,time:new Date().toLocaleString()});try{localStorage.setItem('examRecs',JSON.stringify(rec));}catch(e){}}
+function cpDrawRecords(){var rec=[];try{rec=JSON.parse(localStorage.getItem('examRecs')||'[]');}catch(e){}document.getElementById('cpRecBody').innerHTML=rec.map(function(r){return '<tr><td>'+r.name+'</td><td>'+r.roll+'</td><td>'+r.test+'</td><td>'+r.prob+'</td><td>'+r.score+'%</td><td>'+r.lang+'</td><td>'+r.time+'</td></tr>';}).join('');var c=document.getElementById('cpChart'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);var scores=rec.map(function(r){return r.score;});var w=c.width/Math.max(scores.length,1);scores.forEach(function(s,i){x.fillStyle=s>=70?'#4ade80':s>=40?'#f59e0b':'#ef4444';x.fillRect(i*w+5,c.height-s*2.2,w-10,s*2.2);});}
+function cpDrawGraph(){var c=document.getElementById('cpGgraph'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);var nodes=[['Start',60,130],['Easy',200,130],['Medium',340,130],['Hard',480,130],['Submit',580,60]];x.strokeStyle='#38bdf8';x.lineWidth=2;[[0,1],[1,2],[2,3],[3,4]].forEach(function(e){x.beginPath();x.moveTo(nodes[e[0]][1],nodes[e[0]][2]);x.lineTo(nodes[e[1]][1],nodes[e[1]][2]);x.stroke();});nodes.forEach(function(n){x.fillStyle='#1e293b';x.beginPath();x.arc(n[1],n[2],28,0,7);x.fill();x.strokeStyle='#4ade80';x.stroke();x.fillStyle='#fff';x.font='12px sans-serif';x.textAlign='center';x.fillText(n[0],n[1],n[2]+4);});document.getElementById('cpAdj').textContent='Adjacency List:\nStart -> Easy\nEasy -> Medium\nMedium -> Hard\nHard -> Submit\nSubmit -> (end)';}
+document.addEventListener('visibilitychange',function(){if(document.hidden){cpSwitch++;cpLog('Tab switched! Count: '+cpSwitch);}});
+document.addEventListener('paste',function(){cpPaste++;cpLog('Paste detected! Count: '+cpPaste);});
+</script>
+<script>function applyTheme(){var t=document.getElementById('themeSel').value;document.body.classList.toggle('light',t==='light');} var hiNav=['होम','कैलकुलेटर','लाइब्रेरी','स्नेक','DSA','मैट्रिक्स','कोडिंग टेस्ट','एआई चैट','ब्राउज़र','स्पीड टेस्ट']; var enNav=['Home','Calculator','Library','Snake','DSA','Matrix','Coding Test','AI Chat','Browser','Speed Test']; function applyLang(){var l=document.getElementById('langSel').value;var btns=document.querySelectorAll('nav button');btns.forEach(function(b,i){b.textContent=l==='hi'?(hiNav[i]||b.textContent):(enNav[i]||b.textContent);});document.getElementById('homeH2').textContent=l==='hi'?'🚀 Ionic ToolKit — डैशबोर्ड':'🚀 Ionic ToolKit — Dashboard';document.getElementById('introP').textContent=l==='hi'?'सब कुछ ब्राउज़र में चलता है — इंस्टॉल की ज़रूरत नहीं। हर मॉड्यूल स्टैंडअलोन और साथ में भी काम करता है।':'Everything runs in the browser — no install needed. Each module works standalone as well as in combination.';document.getElementById('flowH3').textContent=l==='hi'?'🔄 यह कैसे काम करता है (फ्लोचार्ट)':'🔄 How It Works (Flowchart)';document.getElementById('modH3').textContent=l==='hi'?'📋 हर मॉड्यूल क्या करता है':'📋 What Each Module Does';document.getElementById('featH3').textContent=l==='hi'?'⚙️ वास्तविक सुविधाएँ':'⚙️ Realistic Features';document.getElementById('techH3').textContent=l==='hi'?'🧱 उपयोग की गई टेक स्टैक':'🧱 Tech Stack Used';document.getElementById('featList').innerHTML=l==='hi'?'<li><b>मॉड्यूल स्टैंडअलोन चलते हैं</b> — हर मॉड्यूल की अलग HTML file</li><li><b>एक ऐप जैसा</b> — एक डैशबोर्ड पर सभी टैब।</li><li><b>ऑफलाइन सपोर्ट</b> — service worker (sw.js) files cache karta hai.</li><li><b>PWA/इंस्टॉल</b> — Install app से app icon.</li><li><b>कोई backend/DB नहीं</b> — सब ब्राउज़र में localStorage me.</li>':'<li><b>Modules run standalone</b> — each module has its own HTML file in the modules/ folder, can open directly in a browser.</li><li><b>Works like a single app</b> — one dashboard with all tabs on one page.</li><li><b>Offline support</b> — service worker (sw.js) caches files.</li><li><b>PWA / Install</b> — Install app adds an app icon to the home screen.</li><li><b>No backend / DB</b> — everything runs in the browser, saved in localStorage.</li>';} </script></body>
+</html>
+
+
